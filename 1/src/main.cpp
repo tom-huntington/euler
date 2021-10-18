@@ -1,20 +1,11 @@
-/*
-If we list all the natural numbers below 10 that are multiples of 3 or 5, we get
-3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the
-multiples of 3 or 5 below 1000.
-*/
-
+#include <range/v3/all.hpp>
 #include <iostream>
-#include <range/v3/view.hpp>
+#include <cstdlib>
 
-template <int N> bool multiple(int n) { return n % N == 0; }
-
-bool multiple_of_3_or_5(int n) { return multiple<3>(n) || multiple<5>(n); }
-
-int sum_of_multiples(int up_to) {
-  return ranges::accumulate(ranges::view::ints(0) | ranges::view::take(up_to) |
-                                ranges::view::filter(multiple_of_3_or_5),
-                            0);
+int main()
+{
+    auto a = ranges::views::iota(1u, 1000u) 
+        | ranges::views::filter([](auto b){ return (b % 5) == 0 || (b % 3) == 0; });
+    std::cout << ranges::accumulate(a, 0);
+    
 }
-
-int main() { std::cout << sum_of_multiples(1000) << '\n'; }

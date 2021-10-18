@@ -1,34 +1,31 @@
-/*
-By listing the first six prime numbers: 2, 3, 5, 7, 11, and 13, we can see that
-the 6th prime is 13.
-
-What is the 10 001st prime number?
-*/
-
-#include <boost/math/special_functions/prime.hpp>
-#include <iostream>
 #include <range/v3/all.hpp>
+#include <iostream>
 
-auto nth_prime(int index) { return boost::math::prime(index); }
+bool is_prime(unsigned i)
+{
+    if (i==2)
+        return true;
+    else if (i==1)
+        return false;
 
-auto one_based(int index) { return index - 1; }
-
-bool is_prime(int n) {
-  using namespace ranges::view;
-  auto any_factor =
-      ints(0) |
-      take_while([n](auto index) { return nth_prime(index) <= sqrt(n); }) |
-      transform(nth_prime) |
-      filter([n](auto prime) { return (n % prime == 0); }) | take(1) |
-      ranges::to_vector;
-  return any_factor.empty();
+    auto s = std::ceil(std::sqrt(i));
+    //std::cout << s << std::endl;
+    for (auto j : ranges::views::iota(2u,s+1))
+    {
+        //std::cout << "j " << j << " i " << i << std::endl;
+        if (i%j==0)
+            return false;
+    }
+    return true;
 }
 
-auto next_prime(int index) {
-  while (!is_prime(++index)) {
-    // churn
-  }
-  return index;
-}
+constexpr unsigned N = 10'001;//6;
+int main()
+{
+    //std::cout << is_prime(25) << std::endl;
+    auto a = ranges::views::iota(2u, ranges::unreachable)
+        | ranges::views::filter(&is_prime)
+        | ranges::views::take(N);
+    std::cout << a << std::endl;
 
-int main() { std::cout << next_prime(nth_prime(one_based(10000))) << '\n'; }
+}

@@ -1,34 +1,62 @@
-/*
-The prime factors of 13195 are 5, 7, 13 and 29.
-
-What is the largest prime factor of the number 600851475143 ?
-*/
-#include <boost/math/special_functions/prime.hpp>
-#include <cstdint>
+#include <range/v3/all.hpp>
 #include <iostream>
-#include <optional>
-#include <range/v3/view.hpp>
+#include <cppcoro/generator.hpp>
 
-auto prime(int index) {
-  return boost::math::prime(static_cast<unsigned>(index));
+constexpr uint64_t N = 600851475143;//13195;
+bool is_prime(unsigned i)
+{
+    auto s = std::ceil(std::sqrt(i));
+    //std::cout << s << std::endl;
+    for (auto j : ranges::views::iota(2u,s+1))
+    {
+      ///std::cout << j << std::endl;
+        if (i%j==0)
+            return false;
+    }
+    return true;
 }
 
-auto largest_prime_factor(int64_t n) {
-  auto largest = 1;
-  auto all = ranges::view::ints(0) |
-             ranges::view::take(boost::math::max_prime) |
-             ranges::view::transform(prime) |
-             ranges::view::filter([&largest, &n](auto prime) {
-               if (n % prime == 0) {
-                 largest = prime;
-                 n /= prime;
-                 return true;
-               };
-               return false;
-             }) |
-             ranges::view::take_while([n](auto prime) { return prime < n; }) |
-             ranges::to_vector;
-  return largest < n ? std::nullopt : std::make_optional(largest);
+template <uint64_t N>
+cppcoro::generator<const std::uint64_t> prime_factors()
+{
+  uint64_t remaining = N;
+  unsigned i = 1;
+  //for (auto i : ranges::views::iota(2u, N / 2))//ranges::unreachable
+  while (i++ < remaining)
+        {
+          //std::cout << i << std::endl;
+            if (remaining % i == 0)
+            {
+                if (is_prime(i))
+                {
+                    remaining /= i;
+                    co_yield i;
+                }
+            }
+        }
 }
 
-int main() { std::cout << *largest_prime_factor(600851475143) << '\n'; }
+
+int main()
+{
+    for (auto i : prime_factors<N>())
+    {
+      std::cout << i << std::endl;
+    }
+    //is_prime(13);
+    //auto factors = ranges::generate(
+    //    [](){ 
+    //        for (auto i : ranges::views::iota(2u, ranges::unreachable))
+    //        {
+    //            if (N % i == 0)
+    //            {
+    //                if (is_prime(i))
+    //                    return N / 2;
+    //            }
+    //        }
+    //    }
+    //);
+
+    //std::cout << factors | ranges::views::take(1);
+    return 0;
+}

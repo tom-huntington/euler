@@ -35,13 +35,13 @@ greatest product. What is the value of this product?
 int char_to_int(char c) { return static_cast<int>(c - '0'); }
 
 int64_t product(const std::vector<char> &input) {
-  return ranges::accumulate(input | ranges::view::transform(char_to_int), 1ll,
+  return ranges::accumulate(input | ranges::views::transform(char_to_int), 1ll,
                             std::multiplies<int64_t>());
 }
 
 int64_t greatest_product(const std::string &input, size_t n_adjacent_digits) {
-  auto products = input | ranges::view::sliding(n_adjacent_digits) |
-                  ranges::view::transform(
+  auto products = input | ranges::views::sliding(n_adjacent_digits) |
+                  ranges::views::transform(
                       [](auto r) { return product(r | ranges::to_vector); }) |
                   ranges::to_vector;
   return *ranges::max_element(products);

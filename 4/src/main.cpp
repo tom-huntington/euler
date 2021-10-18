@@ -1,47 +1,34 @@
-/*
-A palindromic number reads the same both ways. The largest palindrome made from
-the product of two 2-digit numbers is 9009 = 91 × 99.
-
-Find the largest palindrome made from the product of two 3-digit numbers.
-*/
-#include <boost/algorithm/is_palindrome.hpp>
+#include <range/v3/all.hpp>
 #include <iostream>
-#include <range/v3/view.hpp>
-#include <ipow.h>
 
-template <int order> auto max_n_digit_number() { return ipow(10, order) - 1; }
-template <int order> auto min_n_digit_number() { return ipow(10, order - 1); }
-template <int order> bool is_n_digit_number(int n) {
-  return n <= max_n_digit_number<order>() && n >= min_n_digit_number<order>();
+int main()
+{
+    std::string s;
+    constexpr uint64_t N = 999;//99;
+    constexpr uint64_t M = 100;//10;
+    auto a = ranges::views::iota(1u, N * N + 1)
+        | ranges::views::reverse
+        | ranges::views::filter(
+            [&s](auto a){
+                s = std::to_string(a);
+                return ranges::equal(s, s | ranges::views::reverse);
+            }
+        )
+        | ranges::views::filter(
+            [](auto a){
+                for (auto i : ranges::views::iota(M, N + 1))
+                    if (a % i == 0 && a / i >= M && a/i <= N)
+                        return true;
+                
+                return false;
+            }
+        )
+        | ranges::views::take(5);
+    //std::string s = "1001";
+    //auto r = s | ranges::views::reverse;
+    //std::cout << r << std::endl;
+    //std::cout << "equal ? " << ranges::equal(r, s) << std::endl;
+    
+    std::cout << a << std::endl;
+    return 0;
 }
-
-bool is_palindrome(int n) {
-  return boost::algorithm::is_palindrome(std::to_string(n));
-}
-
-template <int order> bool is_product_of_2_n_digits_numbers(int n) {
-  auto first_valid_decomposition =
-      ranges::view::ints(min_n_digit_number<order>(),
-                         max_n_digit_number<order>() + 1) |
-      ranges::view::reverse | ranges::view::filter([&n](auto factor) {
-        if (n % factor == 0) {
-          if (is_n_digit_number<order>(n / factor)) {
-            return true;
-          }
-        };
-        return false;
-      }) |
-      ranges::view::take(1) | ranges::to_vector;
-  return !first_valid_decomposition.empty();
-}
-
-template <int order> auto largest_palindrome_product() {
-  auto max_product = ipow(max_n_digit_number<order>(), 2);
-  auto any = ranges::view::ints(0, max_product + 1) | ranges::view::reverse |
-             ranges::view::filter(is_palindrome) |
-             ranges::view::filter(is_product_of_2_n_digits_numbers<order>) |
-             ranges::view::take(1) | ranges::to_vector;
-  return any.front();
-}
-
-int main() { std::cout << largest_palindrome_product<3>() << std::endl; }

@@ -2,16 +2,19 @@ cmake_minimum_required(VERSION 3.7)
 
 project(euler CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wpedantic -Werror")
 
+set(CMAKE_CXX_STANDARD 20)
 # dependencies
-set(range-v3_INCLUDE_DIR /home/pierrec/Documents/code/ericniebler/range-v3/include)
+message(STATUS "RANGE_V3_INCLUDE_DIR " $ENV{RANGE_V3_INCLUDE_DIR})
+set(range-v3_INCLUDE_DIR $ENV{RANGE_V3_INCLUDE_DIR})
 add_library(range-v3 INTERFACE IMPORTED)
 set_property(TARGET range-v3
   PROPERTY
     INTERFACE_INCLUDE_DIRECTORIES ${range-v3_INCLUDE_DIR}
 )
+
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++experimental")
 
 find_package(Boost)
 

@@ -18,7 +18,7 @@ struct Triplet {
   int c;
 };
 
-using namespace ranges::view;
+using namespace ranges::views;
 template <int Sum>
 auto triplets_adding_up_to = for_each(ints(1, Sum - 2), [](int x) {
   return for_each(ints(1, Sum - x), [=](int y) {
