@@ -13,3 +13,6 @@ $ mkdir build && cd build
 $ cmake -GNinja ..
 $ cmake --build . -v
 ```
+
+Good reference for range-v3:
+https://www.walletfox.com/course/quickref_range_v3.php
